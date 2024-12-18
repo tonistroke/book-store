@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bdIIFinal19
+      POSTGRES_DB: bkstoredb
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - bkstore_network
+
+  #load-balancer:
+  #  image: nginx:latest
+  #  ports:
+  #    - "80:80"
+  #  volumes:
+  #    - .load-balancer/nginx.conf:/etc/nginx/nginx.conf
+  #  depends_on:
+  #    - ordens
+  #    - users
+  #    - log-in
+
+  data_pipeline:
+    image:  apache/airflow
+    container_name: data_pipeline
+    ports:
+      - "8080:8080"
+    networks:
+      - bkstore_network
+
+networks:
+  bkstore_network:
+    driver: bridge
