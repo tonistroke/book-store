@@ -3,9 +3,9 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: bdIIFinal19
-      POSTGRES_DB: bkstoredb
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     ports:
@@ -25,12 +25,37 @@ services:
   #    - log-in
 
   data_pipeline:
-    image:  apache/airflow
-    container_name: data_pipeline
+    image: apache/airflow:2.6.0
+    #environment:
+    #  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+    #  AIRFLOW__CORE__EXECUTOR: "LocalExecutor"
+    #  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:${DB_PASSWORD}@postgres:5432/${DB_NAME}
     ports:
       - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
     networks:
       - bkstore_network
+    depends_on:
+      - db
+
+
+  #etl_app:
+  #  build: .data_pipeline/dags
+  #  container_name: etl_app
+  #  environment:
+  #    DB_USER: ${DB_USER}
+  #    DB_PASSWORD: ${DB_PASSWORD}
+  #    DB_HOST: db
+  #    DB_PORT: ${DB_PORT}
+  #    DB_NAME: ${DB_NAME}
+  #  ports:
+  #    - "5000:5000"
+  #  networks:
+  #    - bkstore_network
+  #  depends_on:
+  #    - db
 
 networks:
   bkstore_network:

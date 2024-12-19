@@ -1,5 +1,4 @@
-const { createCustomer, getCustomerById, getAllCustomers } = require('../models/customer');
-const { createCustomerList, getCustomerLists, deleteCustomerList } = require('../models/customerList');
+const { createCustomer, getCustomerByUserName, getAllCustomers, updateCustomer, deleteCustomer } = require('../models/customer');
 
 // Create a new customer
 const addCustomer = async (req, res) => {
@@ -22,11 +21,15 @@ const getCustomers = async (req, res) => {
   }
 };
 
-// Get customer by ID
+// Get customer by username (from query params)
 const getCustomer = async (req, res) => {
   try {
-    const { customer_id } = req.params;
-    const customer = await getCustomerById(customer_id);
+    const { customer_user_name } = req.query; // Access the query parameter
+    if (!customer_user_name) {
+      return res.status(400).json({ message: 'Username is required' });
+    }
+    
+    const customer = await getCustomerByUserName(customer_user_name);
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
@@ -36,40 +39,34 @@ const getCustomer = async (req, res) => {
   }
 };
 
-// Add a list to a customer
-const addCustomerList = async (req, res) => {
-  try {
-    const { customer_id, list_name } = req.body;
-    const list = await createCustomerList(customer_id, list_name);
-    res.status(201).json(list);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Get all lists of a customer
-const getCustomerListsByCustomerId = async (req, res) => {
+// Update customer
+const updateCustomerDetails = async (req, res) => {
   try {
     const { customer_id } = req.params;
-    const lists = await getCustomerLists(customer_id);
-    res.status(200).json(lists);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Delete a list of a customer
-const deleteCustomerListById = async (req, res) => {
-  try {
-    const { customer_list_id } = req.params;
-    const result = await deleteCustomerList(customer_list_id);
-    if (result === 0) {
-      return res.status(404).json({ message: 'Customer list not found' });
+    const { user_name, email, password } = req.body;
+    
+    const customer = await updateCustomer(customer_id, user_name, email, password);
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
     }
-    res.status(200).json({ message: 'Customer list deleted' });
+    res.status(200).json(customer);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-module.exports = { addCustomer, getCustomers, getCustomer, addCustomerList, getCustomerListsByCustomerId, deleteCustomerListById };
+// Delete customer
+const deleteCustomerById = async (req, res) => {
+  try {
+    const { customer_id } = req.params;
+    const deletedCustomer = await deleteCustomer(customer_id);
+    if (!deletedCustomer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+    res.status(200).json({ message: 'Customer deleted', customer: deletedCustomer });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { addCustomer, getCustomers, getCustomer, updateCustomerDetails, deleteCustomerById };

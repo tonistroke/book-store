@@ -25,23 +25,6 @@ CREATE TABLE "customer" (
 	PRIMARY KEY (customer_id)
 );
 
-INSERT INTO customer (customer_user_name, customer_email, customer_password) VALUES
-('tonssi', 'esmailuasd', 'spass'),
-('tonis', 'emailsdu', 'pass'),
-('toniasd', 'emailasdu', 'pass'),
-('tonisds', 'emailasd', 'pass'),
-('tonssi', 'emaasdlu', 'pass')
-;
-
-CREATE TABLE "customer_list" (
-	customer_list_id UUID DEFAULT uuid_generate_v4(),
-	customer_id UUID NOT NULL,
-	customer_list_name VARCHAR(50) NOT NULL,
-
-	PRIMARY KEY (customer_list_id),
-	FOREIGN KEY (customer_id) REFERENCES "customer"(customer_id)
-);
-
 CREATE TABLE "order" (
 	order_id UUID DEFAULT uuid_generate_v4(),
 	customer_id UUID NOT NULL,
@@ -62,12 +45,46 @@ CREATE TABLE "order_items" (
 	FOREIGN KEY (book_id) REFERENCES "book"(book_id)
 );
 
+-- ____________________________________________________________________________
+
+CREATE TABLE "recomend_group" (
+	recomend_group_id SERIAL,
+	recomend_group_name VARCHAR(100),
+
+	PRIMARY KEY (recomend_group_id)
+);
+
+CREATE TABLE "book_group" (
+	book_group_id SERIAL,
+	recomend_group_id INTEGER,
+	book_id UUID,
+
+	PRIMARY KEY (book_group_id),
+	FOREIGN KEY (recomend_group_id) REFERENCES recomend_group(recomend_group_id),
+	FOREIGN KEY (book_id) REFERENCES book(book_id)
+);
+
+ALTER TABLE "customer"
+ADD COLUMN recomend_group_id INTEGER;
+
+ALTER TABLE "customer"
+ADD FOREIGN KEY (recomend_group_id)
+REFERENCES "recomend_group"(recomend_group_id);
+
+
+
+
+-- ____________________________________________________________________________
 
 /*
 SELECT * FROM user
 WHERE id::text = '33bb9554-c616-42e6-a9c6-88d3bba4221c' 
   OR uid = '33bb9554-c616-42e6-a9c6-88d3bba4221c';
 */
+
+
+
+
 
 CREATE OR REPLACE PROCEDURE uuid_customer(user_name TEXT)
 AS
@@ -83,19 +100,22 @@ BEGIN
     RAISE NOTICE 'Customer ID: %', user_id;
 END;
 $$ LANGUAGE 'plpgsql';
+/*
 
-
--- | customers | lists |
+-- | customers | orders |
 CREATE VIEW customers_lists AS
 SELECT C.customer_user_name AS Usuario, CL.customer_list_name AS Lista
 FROM customer C
 JOIN customer_list CL ON C.customer_id = CL.customer_id
 ;
 
--- | customer | lists |
+-- | customer | orders |
 SELECT C.customer_user_name AS Usuario, CL.customer_list_name AS Lista
 FROM customer C
 JOIN customer_list CL ON C.customer_id = CL.customer_id
 ;
 -- | customer | list | book |
 -- SELECT * 
+
+SELECT * FROM customer;
+*/

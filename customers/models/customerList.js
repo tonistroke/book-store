@@ -3,15 +3,15 @@ const uuid = require('uuid');
 
 // Create a new customer list
 const createCustomerList = async (customer_id, list_name) => {
-  const customer_list_id = uuid.v4();
+  //const customer_list_id = uuid.v4();
   
   const query = `
-    INSERT INTO customer_list (customer_list_id, customer_id, customer_list_name)
-    VALUES ($1, $2, $3)
+    INSERT INTO customer_list (customer_id, customer_list_name)
+    VALUES ($1, $2)
     RETURNING customer_list_id, customer_list_name
   `;
   
-  const values = [customer_list_id, customer_id, list_name];
+  const values = [/*customer_list_id,*/ customer_id, list_name];
   const result = await pool.query(query, values);
   return result.rows[0];
 };
