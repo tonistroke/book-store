@@ -1,0 +1,669 @@
+version: 3.9.6
+
+type: DeclarativeSource
+
+check:
+  type: CheckStream
+  stream_names:
+    - book
+
+definitions:
+  streams:
+    book:
+      type: DeclarativeStream
+      name: book
+      retriever:
+        type: SimpleRetriever
+        requester:
+          $ref: '#/definitions/base_requester'
+          path: https://openlibrary.org/search.json?q={{ config['search_id'] }}
+          http_method: GET
+          request_parameters:
+            volumeinfo: '100'
+        record_selector:
+          type: RecordSelector
+          extractor:
+            type: DpathExtractor
+            field_path:
+              - docs
+      schema_loader:
+        type: InlineSchemaLoader
+        schema:
+          $ref: '#/schemas/book'
+      transformations:
+        - type: RemoveFields
+          field_pointers:
+            - - author_key
+        - type: RemoveFields
+          field_pointers:
+            - - cover_edition_key
+        - type: RemoveFields
+          field_pointers:
+            - - cover_i
+        - type: RemoveFields
+          field_pointers:
+            - - ebook_access
+        - type: RemoveFields
+          field_pointers:
+            - - ebook_count_i
+        - type: RemoveFields
+          field_pointers:
+            - - edition_count
+        - type: RemoveFields
+          field_pointers:
+            - - edition_key
+        - type: RemoveFields
+          field_pointers:
+            - - has_fulltext
+        - type: RemoveFields
+          field_pointers:
+            - - key
+        - type: RemoveFields
+          field_pointers:
+            - - language
+        - type: RemoveFields
+          field_pointers:
+            - - last_modified_i
+        - type: RemoveFields
+          field_pointers:
+            - - number_of_pages_median
+        - type: RemoveFields
+          field_pointers:
+            - - public_scans
+        - type: RemoveFields
+          field_pointers:
+            - - publish_date
+        - type: RemoveFields
+          field_pointers:
+            - - public_scan_b
+        - type: RemoveFields
+          field_pointers:
+            - - publish_year
+        - type: RemoveFields
+          field_pointers:
+            - - seed
+        - type: RemoveFields
+          field_pointers:
+            - - title_suggest
+        - type: RemoveFields
+          field_pointers:
+            - - title_sort
+        - type: RemoveFields
+          field_pointers:
+            - - readinglog_count
+        - type: RemoveFields
+          field_pointers:
+            - - want_to_read_count
+        - type: RemoveFields
+          field_pointers:
+            - - currently_reading_count
+        - type: RemoveFields
+          field_pointers:
+            - - already_read_count
+        - type: RemoveFields
+          field_pointers:
+            - - publisher_facet
+        - type: RemoveFields
+          field_pointers:
+            - - _version_
+        - type: RemoveFields
+          field_pointers:
+            - - isbn
+        - type: RemoveFields
+          field_pointers:
+            - - author_facet
+        - type: RemoveFields
+          field_pointers:
+            - - lcc
+        - type: RemoveFields
+          field_pointers:
+            - - subject
+        - type: RemoveFields
+          field_pointers:
+            - - subject_facet
+        - type: RemoveFields
+          field_pointers:
+            - - lcc_sort
+        - type: RemoveFields
+          field_pointers:
+            - - subject_key
+        - type: RemoveFields
+          field_pointers:
+            - - format
+        - type: RemoveFields
+          field_pointers:
+            - - subtle
+        - type: RemoveFields
+          field_pointers:
+            - - subtitle
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_average
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_sortable
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count_1
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count_2
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count_3
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count_4
+        - type: RemoveFields
+          field_pointers:
+            - - ratings_count_5
+        - type: RemoveFields
+          field_pointers:
+            - - ddc_sort
+        - type: RemoveFields
+          field_pointers:
+            - - ddc
+        - type: AddFields
+          fields:
+            - path:
+                - book_title
+              value: '{{ record[''title''] }}'
+        - type: RemoveFields
+          field_pointers:
+            - - title
+        - type: AddFields
+          fields:
+            - path:
+                - book_author
+              value: '{{ record[''author_name''] }}'
+        - type: RemoveFields
+          field_pointers:
+            - - author_name
+        - type: AddFields
+          fields:
+            - path:
+                - book_publisher
+              value: '{{ record[''publisher''] }}'
+        - type: RemoveFields
+          field_pointers:
+            - - publisher
+        - type: AddFields
+          fields:
+            - path:
+                - book_type
+              value: '{{ record[''type''] }}'
+        - type: RemoveFields
+          field_pointers:
+            - - type
+        - type: AddFields
+          fields:
+            - path:
+                - book_year
+              value: '{{ record[''first_publish_year''] }}'
+        - type: RemoveFields
+          field_pointers:
+            - - first_publish_year
+    Get books:
+      type: DeclarativeStream
+      name: Get books
+      retriever:
+        type: SimpleRetriever
+        requester:
+          $ref: '#/definitions/base_requester'
+          path: >-
+            https://www.googleapis.com/books/v1/volumes?q={{ config['search_id']
+            }}
+          http_method: GET
+          request_parameters:
+            volumeinfo: '100'
+        record_selector:
+          type: RecordSelector
+          extractor:
+            type: DpathExtractor
+            field_path:
+              - items
+      schema_loader:
+        type: InlineSchemaLoader
+        schema:
+          $ref: '#/schemas/Get books'
+      transformations:
+        - type: AddFields
+          fields:
+            - path:
+                - book_name
+              value: '{{ record[''volumeInfo''][''title''] }}'
+        - type: AddFields
+          fields:
+            - path:
+                - book_author
+              value: '{{ record[''volumeInfo''][''authors''] }}'
+        - type: AddFields
+          fields:
+            - path:
+                - book_publisher
+              value: '{{ record[''volumeinfo''] }}'
+        - type: AddFields
+          fields:
+            - path:
+                - book_description
+              value: '{{ [''searchinfo''][''textSnippet''] }}'
+  base_requester:
+    type: HttpRequester
+    url_base: https://openlibrary.org/search.json
+
+streams:
+  - $ref: '#/definitions/streams/book'
+  - $ref: '#/definitions/streams/Get books'
+
+spec:
+  type: Spec
+  connection_specification:
+    type: object
+    $schema: http://json-schema.org/draft-07/schema#
+    required:
+      - search_id
+    properties:
+      search_id:
+        type: string
+        order: 0
+        title: search
+        description: make a search
+    additionalProperties: true
+
+metadata:
+  testedStreams:
+    book:
+      hasRecords: true
+      streamHash: e9c9180dd14c28bf6c9b9114d2951926c37e1cf1
+      hasResponse: true
+      primaryKeysAreUnique: true
+      primaryKeysArePresent: true
+      responsesAreSuccessful: true
+    Get books:
+      hasRecords: true
+      streamHash: b0c57e39e8710006c56884c5e651269d0effff25
+      hasResponse: true
+      primaryKeysAreUnique: true
+      primaryKeysArePresent: true
+      responsesAreSuccessful: true
+  autoImportSchema:
+    book: true
+    Get books: true
+
+schemas:
+  book:
+    type: object
+    $schema: http://json-schema.org/schema#
+    properties:
+      book_type:
+        type:
+          - string
+          - 'null'
+      book_year:
+        type:
+          - number
+          - 'null'
+      book_title:
+        type:
+          - string
+          - 'null'
+      book_author:
+        type:
+          - array
+          - 'null'
+        items:
+          type:
+            - string
+            - 'null'
+      book_publisher:
+        type:
+          - array
+          - 'null'
+        items:
+          type:
+            - string
+            - 'null'
+    additionalProperties: true
+  Get books:
+    type: object
+    $schema: http://json-schema.org/schema#
+    properties:
+      id:
+        type:
+          - string
+          - 'null'
+      etag:
+        type:
+          - string
+          - 'null'
+      kind:
+        type:
+          - string
+          - 'null'
+      saleInfo:
+        type:
+          - object
+          - 'null'
+        properties:
+          offers:
+            type:
+              - array
+              - 'null'
+            items:
+              type:
+                - object
+                - 'null'
+              properties:
+                listPrice:
+                  type:
+                    - object
+                    - 'null'
+                  properties:
+                    currencyCode:
+                      type:
+                        - string
+                        - 'null'
+                    amountInMicros:
+                      type:
+                        - number
+                        - 'null'
+                retailPrice:
+                  type:
+                    - object
+                    - 'null'
+                  properties:
+                    currencyCode:
+                      type:
+                        - string
+                        - 'null'
+                    amountInMicros:
+                      type:
+                        - number
+                        - 'null'
+                finskyOfferType:
+                  type:
+                    - number
+                    - 'null'
+          buyLink:
+            type:
+              - string
+              - 'null'
+          country:
+            type:
+              - string
+              - 'null'
+          isEbook:
+            type:
+              - boolean
+              - 'null'
+          listPrice:
+            type:
+              - object
+              - 'null'
+            properties:
+              amount:
+                type:
+                  - number
+                  - 'null'
+              currencyCode:
+                type:
+                  - string
+                  - 'null'
+          retailPrice:
+            type:
+              - object
+              - 'null'
+            properties:
+              amount:
+                type:
+                  - number
+                  - 'null'
+              currencyCode:
+                type:
+                  - string
+                  - 'null'
+          saleability:
+            type:
+              - string
+              - 'null'
+      selfLink:
+        type:
+          - string
+          - 'null'
+      book_name:
+        type:
+          - string
+          - 'null'
+      accessInfo:
+        type:
+          - object
+          - 'null'
+        properties:
+          pdf:
+            type:
+              - object
+              - 'null'
+            properties:
+              isAvailable:
+                type:
+                  - boolean
+                  - 'null'
+              acsTokenLink:
+                type:
+                  - string
+                  - 'null'
+          epub:
+            type:
+              - object
+              - 'null'
+            properties:
+              isAvailable:
+                type:
+                  - boolean
+                  - 'null'
+              acsTokenLink:
+                type:
+                  - string
+                  - 'null'
+          country:
+            type:
+              - string
+              - 'null'
+          embeddable:
+            type:
+              - boolean
+              - 'null'
+          viewability:
+            type:
+              - string
+              - 'null'
+          publicDomain:
+            type:
+              - boolean
+              - 'null'
+          webReaderLink:
+            type:
+              - string
+              - 'null'
+          accessViewStatus:
+            type:
+              - string
+              - 'null'
+          quoteSharingAllowed:
+            type:
+              - boolean
+              - 'null'
+          textToSpeechPermission:
+            type:
+              - string
+              - 'null'
+      searchInfo:
+        type:
+          - object
+          - 'null'
+        properties:
+          textSnippet:
+            type:
+              - string
+              - 'null'
+      volumeInfo:
+        type:
+          - object
+          - 'null'
+        properties:
+          title:
+            type:
+              - string
+              - 'null'
+          authors:
+            type:
+              - array
+              - 'null'
+            items:
+              type:
+                - string
+                - 'null'
+          infoLink:
+            type:
+              - string
+              - 'null'
+          language:
+            type:
+              - string
+              - 'null'
+          subtitle:
+            type:
+              - string
+              - 'null'
+          pageCount:
+            type:
+              - number
+              - 'null'
+          printType:
+            type:
+              - string
+              - 'null'
+          publisher:
+            type:
+              - string
+              - 'null'
+          categories:
+            type:
+              - array
+              - 'null'
+            items:
+              type:
+                - string
+                - 'null'
+          imageLinks:
+            type:
+              - object
+              - 'null'
+            properties:
+              thumbnail:
+                type:
+                  - string
+                  - 'null'
+              smallThumbnail:
+                type:
+                  - string
+                  - 'null'
+          description:
+            type:
+              - string
+              - 'null'
+          previewLink:
+            type:
+              - string
+              - 'null'
+          ratingsCount:
+            type:
+              - number
+              - 'null'
+          readingModes:
+            type:
+              - object
+              - 'null'
+            properties:
+              text:
+                type:
+                  - boolean
+                  - 'null'
+              image:
+                type:
+                  - boolean
+                  - 'null'
+          averageRating:
+            type:
+              - number
+              - 'null'
+          publishedDate:
+            type:
+              - string
+              - 'null'
+          contentVersion:
+            type:
+              - string
+              - 'null'
+          maturityRating:
+            type:
+              - string
+              - 'null'
+          allowAnonLogging:
+            type:
+              - boolean
+              - 'null'
+          canonicalVolumeLink:
+            type:
+              - string
+              - 'null'
+          industryIdentifiers:
+            type:
+              - array
+              - 'null'
+            items:
+              type:
+                - object
+                - 'null'
+              properties:
+                type:
+                  type:
+                    - string
+                    - 'null'
+                identifier:
+                  type:
+                    - string
+                    - 'null'
+          panelizationSummary:
+            type:
+              - object
+              - 'null'
+            properties:
+              containsEpubBubbles:
+                type:
+                  - boolean
+                  - 'null'
+              containsImageBubbles:
+                type:
+                  - boolean
+                  - 'null'
+      book_author:
+        type:
+          - array
+          - 'null'
+        items:
+          type:
+            - string
+            - 'null'
+      book_publisher:
+        type:
+          - string
+          - 'null'
+      book_description:
+        type:
+          - string
+          - 'null'
+    additionalProperties: true

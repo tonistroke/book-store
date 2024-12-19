@@ -1,0 +1,91 @@
+version: 1.0
+airbyte_spec:
+  version: 0.1.0
+  source:
+    name: open_library_api
+    description: A custom source connector that extracts book data from the Open Library API.
+    documentation_url: https://openlibrary.org/developers
+
+  destination:
+    name: postgres_db
+    description: A PostgreSQL destination connector that stores book data into a PostgreSQL database.
+    documentation_url: https://www.postgresql.org/docs/
+
+source_definition:
+  name: open_library_api
+  version: 0.1.0
+  spec:
+    documentation_url: https://openlibrary.org/developers
+    connection_spec:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query for books on Open Library
+          default: javascript
+        page_size:
+          type: integer
+          description: Number of books to fetch per query (default: 10)
+          default: 10
+
+destination_definition:
+  name: postgres_db
+  version: 0.1.0
+  spec:
+    documentation_url: https://www.postgresql.org/docs/
+    connection_spec:
+      type: object
+      properties:
+        host:
+          type: string
+          description: Hostname of the PostgreSQL server
+        port:
+          type: integer
+          description: Port of the PostgreSQL server
+        user:
+          type: string
+          description: PostgreSQL username
+        password:
+          type: string
+          description: PostgreSQL password
+          secret: true
+        database:
+          type: string
+          description: PostgreSQL database name
+        table_name:
+          type: string
+          description: The table where books data will be stored
+          default: book
+
+# This section defines the sync operation between the Open Library API and PostgreSQL
+sync:
+  - name: insert_books
+    description: Fetch books from Open Library and insert them into the PostgreSQL database.
+    input_schema:
+      type: object
+      properties:
+        book_title:
+          type: string
+        book_author:
+          type: string
+        book_publisher:
+          type: string
+        book_img_large:
+          type: string
+        book_img_medium:
+          type: string
+        book_img_small:
+          type: string
+        book_price:
+          type: number
+        book_cuantity_in_stock:
+          type: integer
+        book_description:
+          type: string
+    output_schema:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["success", "error"]
+          description: Status of the sync operation

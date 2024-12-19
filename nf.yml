@@ -1,0 +1,135 @@
+- type: RemoveFields
+  field_pointers:
+    - - author_key
+- type: RemoveFields
+  field_pointers:
+    - - cover_edition_key
+- type: RemoveFields
+  field_pointers:
+    - - cover_i
+- type: RemoveFields
+  field_pointers:
+    - - ebook_access
+- type: RemoveFields
+  field_pointers:
+    - - ebook_count_i
+- type: RemoveFields
+  field_pointers:
+    - - edition_count
+- type: RemoveFields
+  field_pointers:
+    - - edition_key
+- type: RemoveFields
+  field_pointers:
+    - - has_fulltext
+- type: RemoveFields
+  field_pointers:
+    - - key
+- type: RemoveFields
+  field_pointers:
+    - - language
+- type: RemoveFields
+  field_pointers:
+    - - last_modified_i
+- type: RemoveFields
+  field_pointers:
+    - - number_of_pages_median
+- type: RemoveFields
+  field_pointers:
+    - - public_scans
+- type: RemoveFields
+  field_pointers:
+    - - publish_date
+- type: RemoveFields
+  field_pointers:
+    - - public_scan_b
+- type: RemoveFields
+  field_pointers:
+    - - publish_year
+- type: RemoveFields
+  field_pointers:
+    - - seed
+- type: RemoveFields
+  field_pointers:
+    - - title_suggest
+- type: RemoveFields
+  field_pointers:
+    - - title_sort
+- type: RemoveFields
+  field_pointers:
+    - - readinglog_count
+- type: RemoveFields
+  field_pointers:
+    - - want_to_read_count
+- type: RemoveFields
+  field_pointers:
+    - - currently_reading_count
+- type: RemoveFields
+  field_pointers:
+    - - already_read_count
+- type: RemoveFields
+  field_pointers:
+    - - publisher_facet
+- type: RemoveFields
+  field_pointers:
+    - - _version_
+- type: RemoveFields
+  field_pointers:
+    - - isbn
+- type: RemoveFields
+  field_pointers:
+    - - author_facet
+- type: RemoveFields
+  field_pointers:
+    - - lcc
+- type: RemoveFields
+  field_pointers:
+    - - subject
+- type: RemoveFields
+  field_pointers:
+    - - subject_facet
+- type: RemoveFields
+  field_pointers:
+    - - lcc_sort
+- type: RemoveFields
+  field_pointers:
+    - - subject_key
+- type: RemoveFields
+  field_pointers:
+    - - format
+- type: RemoveFields
+  field_pointers:
+    - - subtle
+- type: RemoveFields
+  field_pointers:
+    - - subtitle
+- type: RemoveFields
+  field_pointers:
+    - - ratings_average
+- type: RemoveFields
+  field_pointers:
+    - - ratings_sortable
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count_1
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count_2
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count_3
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count_4
+- type: RemoveFields
+  field_pointers:
+    - - ratings_count_5
+- type: RemoveFields
+  field_pointers:
+    - - dcc_sort
+- type: RemoveFields
+  field_pointers:
+    - - ddc
