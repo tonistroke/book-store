@@ -96,15 +96,17 @@ BEGIN
     RAISE NOTICE 'Customer ID: %', user_id;
 END;
 $$ LANGUAGE 'plpgsql';
-/*
 
+/*
 -- | customers | orders |
-CREATE VIEW customers_lists AS
-SELECT C.customer_user_name AS Usuario, CL.customer_list_name AS Lista
+CREATE VIEW customers_orders AS
+SELECT C.customer_user_name AS Usuario, O.order_date AS Fecha
 FROM customer C
-JOIN customer_list CL ON C.customer_id = CL.customer_id
+JOIN order O ON C.customer_id = O.customer_id
 ;
 
+*/
+/*
 -- | customer | orders |
 SELECT C.customer_user_name AS Usuario, CL.customer_list_name AS Lista
 FROM customer C
